@@ -127,6 +127,10 @@ companies have the same maximum count.
 => select c.company_name, COUNT(c.company_name) from jobs j  
 JOIN company c ON j.company_id=c.id group by c.company_name order by 
 COUNT(c.company_name) DESC limit 1; 
+
+=> select c.company_name, COUNT(c.company_name) as job_posts from jobs j 
+JOIN company c ON j.company_id=c.id group by c.company_name HAVING COUNT(c.company_name) = (select COUNT(c.company_name) from jobs j 
+JOIN company c ON j.company_id=c.id group by c.company_name ORDER BY COUNT(c.company_name) DESC LIMIT 1);
 +--------------+-----------------------+
 | company_name | COUNT(c.company_name) |
 +--------------+-----------------------+

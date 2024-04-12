@@ -1,0 +1,242 @@
+TASK 2...
+
+2. Write an SQL query to enroll a student in a course. Choose an existing student and course and insert a record into the "Enrollments" table with the enrollment date.
+INSERT INTO enrollments(students_id, courses_id, enrollment_date) VALUES (3, 4, '2012-07-20');
+
+3. Update the email address of a specific teacher in the "Teacher" table. Choose any teacher and modify their email address. 
+UPDATE teacher SET email='umbridge@hogwards.com' WHERE id=5;
+
+4. Write an SQL query to delete a specific enrollment record from the "Enrollments" table. Select an enrollment record based on the student and course.
+DELETE FROM enrollments WHERE id=10;
+
+5. Update the "Courses" table to assign a specific teacher to a course. Choose any course and teacher from the respective tables.
+UPDATE courses SET teacher_id=2 WHERE id=5;
+
+6. Delete a specific student from the "Students" table and remove all their enrollment records from the "Enrollments" table. Be sure to maintain referential integrity.
+DELETE FROM students where id=2; DELETE FROM enrollments where student_id=2;
+
+7. Update the payment amount for a specific payment record in the "Payments" table. Choose any payment record and modify the payment amount.
+UPDATE payments SET amount=1200 WHERE id=8;
+
+============================================================================================================================================================================================
+
+TASK 3].
+1. Write an SQL query to calculate the total payments made by a specific student. You will need to join the "Payments" table with the "Students" table based on the student's ID.
+select s.first_name, p.amount from students s JOIN payments p ON s.id=p.students_id WHERE s.first_name='Draco';
++------------+--------+
+| first_name | amount |
++------------+--------+
+| Draco      |   3700 |
+| Draco      |   9000 |
++------------+--------+
+
+2. Write an SQL query to retrieve a list of courses along with the count of students enrolled in each course. Use a JOIN operation between the "Courses" table and the "Enrollments" table.
+select c.name, COUNT(students_Id) from courses c JOIN enrollments e ON c.id=e.courses_id group by c.name;
++---------+--------------------+
+| name    | COUNT(students_Id) |
++---------+--------------------+
+| AI/ML   |                  1 |
+| Angular |                  1 |
+| C++     |                  2 |
+| DevOps  |                  2 |
+| Java    |                  1 |
+| Python  |                  1 |
+| React   |                  1 |
++---------+--------------------+
+
+3. Write an SQL query to find the names of students who have not enrolled in any course. Use a LEFT JOIN between the "Students" table and the "Enrollments" table to identify students without enrollments.
+select * from students s where id not in (select students_id from enrollments);
+(Empty Set)
+
+4. Write an SQL query to retrieve the first name, last name of students, and the names of the courses they are enrolled in. Use JOIN operations between the "Students" table and the "Enrollments" and "Courses" tables.
+select s.first_name, s.last_name, c.name from students s JOIN enrollments e ON s.id=e.students_id JOIN courses c ON e.courses_id=c.id;
++------------+------------+---------+
+| first_name | last_name  | name    |
++------------+------------+---------+
+| Harry      | Potter     | DevOps  |
+| Harry      | Potter     | Java    |
+| Ronald     | Weasley    | C++     |
+| Ronald     | Weasley    | C++     |
+| Hermione   | Granger    | AI/ML   |
+| Draco      | Malfoy     | DevOps  |
+| Draco      | Malfoy     | React   |
+| Ginni      | Weasley    | Python  |
+| Neville    | Longbottom | Angular |
++------------+------------+---------+
+
+5.Create a query to list the names of teachers and the courses they are assigned to. Join the "Teacher" table with the "Courses" table.
+select t.first_name, t.last_name, c.name from teacher t JOIN courses c ON t.id=c.teacher_id;
++------------+------------+---------+
+| first_name | last_name  | name    |
++------------+------------+---------+
+| Albus      | Dumbledore | AI/ML   |
+| Albus      | Dumbledore | DevOps  |
+| Severus    | Snape      | Java    |
+| Severus    | Snape      | Angular |
+| Rubeus     | Hagrid     | React   |
+| Minerva    | McGonagall | Python  |
+| Dolores    | Umbridge   | C++     |
++------------+------------+---------+
+
+6. Retrieve a list of students and their enrollment dates for a specific course. You'll need to join the "Students" table with the "Enrollments" and "Courses" tables.
+select s.first_name, s.last_name, e.enrollment_date from students s JOIN enrollments e ON s.id=e.students_id JOIN courses c ON e.courses_id=c.id WHERE c.name='DevOps';
++------------+-----------+-----------------+
+| first_name | last_name | enrollment_date |
++------------+-----------+-----------------+
+| Harry      | Potter    | 2012-02-28      |
+| Draco      | Malfoy    | 2012-07-25      |
++------------+-----------+-----------------+
+
+7. Find the names of students who have not made any payments. Use a LEFT JOIN between the "Students" table and the "Payments" table and filter for students with NULL payment records.
+select * from students where id not in (select students_id from payments);
+(Empty set)
+
+8. Write a query to identify courses that have no enrollments. You'll need to use a LEFT JOIN between the "Courses" table and the "Enrollments" table and filter for courses with NULL enrollment records.
+select name from courses where id not in (select courses_id from enrollments);
+(Empty set)
+
+
+9. Identify students who are enrolled in more than one course. Use a self-join on the "Enrollments" table to find students with multiple enrollment records.
+select s.first_name, s.last_name, COUNT(e.courses_id) from enrollments e JOIN students s ON s.id=e.students_id group by s.first_name having COUNT(e.courses_id)>1;
++------------+-----------+---------------------+
+| first_name | last_name | COUNT(e.courses_id) |
++------------+-----------+---------------------+
+| Draco      | Malfoy    |                   2 |
+| Harry      | Potter    |                   2 |
+| Ronald     | Weasley   |                   2 |
++------------+-----------+---------------------+
+
+10. Find teachers who are not assigned to any courses. Use a LEFT JOIN between the "Teacher" table and the "Courses" table and filter for teachers with NULL course assignments.
+select * from teacher where id not in (select teacher_id from courses);
+(Empty set)
+
+============================================================================================================================================================================================
+
+TASK 4...
+
+1. Write an SQL query to calculate the average number of students enrolled in each course. Use aggregate functions and subqueries to achieve this.
+select c.name, AVG(e.students_id) from students s JOIN enrollments e ON s.id=e.students_id JOIN courses c ON e.courses_id=c.id group by c.name;
++---------+--------------------+
+| name    | AVG(e.students_id) |
++---------+--------------------+
+| AI/ML   |             3.0000 |
+| Angular |             6.0000 |
+| C++     |             2.0000 |
+| DevOps  |             2.5000 |
+| Java    |             1.0000 |
+| Python  |             5.0000 |
+| React   |             4.0000 |
++---------+--------------------+
+
+2. Identify the student(s) who made the highest payment. Use a subquery to find the maximum payment amount and then retrieve the student(s) associated with that amount.
+select first_name, last_name from students where id in (select students_id from payments where amount = (select MAX(amount) from payments));
++------------+-----------+
+| first_name | last_name |
++------------+-----------+
+| Harry      | Potter    |
++------------+-----------+
+
+3. Retrieve a list of courses with the highest number of enrollments. Use subqueries to find the course(s) with the maximum enrollment count.
+select c.name, COUNT(e.students_id) from students s JOIN enrollments e ON s.id=e.students_id JOIN courses c ON e.courses_id=c.id group by c.name ORDER BY COUNT(e.students_id) DESC;
++---------+----------------------+
+| name    | COUNT(e.students_id) |
++---------+----------------------+
+| DevOps  |                    2 |
+| C++     |                    2 |
+| Java    |                    1 |
+| AI/ML   |                    1 |
+| React   |                    1 |
+| Python  |                    1 |
+| Angular |                    1 |
++---------+----------------------+
+
+4. Calculate the total payments made to courses taught by each teacher. Use subqueries to sum payments for each teacher's courses.
+select t.first_name, t.last_name, SUM(p.amount) from payments p JOIN students s ON p.students_Id=s.id JOIN enrollments e ON s.id=e.students_Id JOIN courses c ON e.courses_id=c.id JOIN teacher t ON c.teacher_id=t.id group by t.id;
++------------+------------+---------------+
+| first_name | last_name  | SUM(p.amount) |
++------------+------------+---------------+
+| Albus      | Dumbledore |         52200 |
+| Severus    | Snape      |         38500 |
+| Rubeus     | Hagrid     |         12700 |
+| Minerva    | McGonagall |          4000 |
+| Dolores    | Umbridge   |          4400 |
++------------+------------+---------------+
+
+5. Identify students who are enrolled in all available courses. Use subqueries to compare a student's enrollments with the total number of courses.
+select s.first_name, s.last_name from enrollments e JOIN students s ON e.students_Id=s.id group by s.id HAVING COUNT(e.courses_Id) = (select COUNT(id) from courses);
+(Empty set)
+
+6. Retrieve the names of teachers who have not been assigned to any courses. Use subqueries to find teachers with no course assignments.
+select * from teacher where id not in (select teacher_id from courses);
+(Empty set)
+
+7. Calculate the average age of all students. Use subqueries to calculate the age of each student based on their date of birth.
+SELECT first_name, last_name, AVG(DATEDIFF('2024-01-09', date_of_birth)/365) AS age from students GROUP BY id;
++------------+------------+-------------+
+| first_name | last_name  | age         |
++------------+------------+-------------+
+| Harry      | Potter     | 22.01369863 |
+| Ronald     | Weasley    | 22.01369863 |
+| Hermione   | Granger    | 22.01369863 |
+| Draco      | Malfoy     | 22.01369863 |
+| Ginni      | Weasley    | 22.01369863 |
+| Neville    | Longbottom | 22.01369863 |
++------------+------------+-------------+
+
+8. Identify courses with no enrollments. Use subqueries to find courses without enrollment records.
+SELECT * from courses where id not in (select courses_id from enrollments);
+(Empty set)
+
+9. Calculate the total payments made by each student for each course they are enrolled in. Use subqueries and aggregate functions to sum payments.
+SELECT s.first_name, s.last_name, c.name from enrollments e JOIN students s ON e.students_Id=s.id JOIN courses c ON e.courses_id=c.id JOIN payments p ON p.students_Id=s.id;
+db not suitable for this question. 
+
+10. Identify students who have made more than one payment. Use subqueries and aggregate functions to count payments per student and filter for those with counts greater than one.
+SELECT s.first_name, s.last_name from payments p JOIN students s ON p.students_Id=s.id group by s.id having COUNT(s.id)>1;
++------------+-----------+
+| first_name | last_name |
++------------+-----------+
+| Harry      | Potter    |
+| Ronald     | Weasley   |
+| Draco      | Malfoy    |
++------------+-----------+
+
+11. Write an SQL query to calculate the total payments made by each student. Join the "Students" table with the "Payments" table and use GROUP BY to calculate the sum of payments for each student.
+SELECT s.first_name, s.last_name, SUM(p.amount) from payments p JOIN students s ON p.students_Id=s.id group by s.id;
++------------+------------+---------------+
+| first_name | last_name  | SUM(p.amount) |
++------------+------------+---------------+
+| Harry      | Potter     |         32000 |
+| Ronald     | Weasley    |          2200 |
+| Hermione   | Granger    |          7500 |
+| Draco      | Malfoy     |         12700 |
+| Ginni      | Weasley    |          4000 |
+| Neville    | Longbottom |          6500 |
++------------+------------+---------------+
+
+12. Retrieve a list of course names along with the count of students enrolled in each course. Use JOIN operations between the "Courses" table and the "Enrollments" table and GROUP BY to count enrollments.
+SELECT c.name, COUNT(s.id) from enrollments e JOIN students s ON e.students_Id=s.id JOIN courses c ON c.id=e.courses_id group by c.name;
++---------+-------------+
+| name    | COUNT(s.id) |
++---------+-------------+
+| AI/ML   |           1 |
+| Angular |           1 |
+| C++     |           2 |
+| DevOps  |           2 |
+| Java    |           1 |
+| Python  |           1 |
+| React   |           1 |
++---------+-------------+
+
+13. Calculate the average payment amount made by students. Use JOIN operations between the "Students" table and the "Payments" table and GROUP BY to calculate the average.
+SELECT s.first_name, s.last_name, AVG(p.amount) from payments p JOIN students s ON p.students_Id=s.id group by s.id;
++------------+------------+---------------+
+| first_name | last_name  | AVG(p.amount) |
++------------+------------+---------------+
+| Harry      | Potter     |         16000 |
+| Ronald     | Weasley    |          1100 |
+| Hermione   | Granger    |          7500 |
+| Draco      | Malfoy     |          6350 |
+| Ginni      | Weasley    |          4000 |
+| Neville    | Longbottom |          6500 |
++------------+------------+---------------+
